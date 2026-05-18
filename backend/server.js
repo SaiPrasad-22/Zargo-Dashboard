@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const connectDB = require("./config/db");
 const { errorHandler } = require("./middleware/authMiddleware");
 
@@ -11,7 +12,8 @@ const alertRoutes = require("./routes/alertRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 
-const reportRoutes = require("./routes/reportRoutes");
+const reportRoutes = require("./routes/reportRoutes");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -23,9 +25,13 @@ const corsOptions = {
   credentials: true,
 };
 
-app.use(cors(corsOptions));app.use(express.json());
+app.use(cors(corsOptions));
+app.use(express.json());
 
-app.get("/", (_req, res) => res.send("Zargo Backend Running"));
+// Serve frontend static files
+const distPath = path.join(__dirname, "../dist");
+app.use(express.static(distPath));
+
 app.get("/api/health", (_req, res) => res.json({ ok: true, ts: Date.now() }));
 
 app.use("/api/auth", authRoutes);
@@ -35,8 +41,11 @@ app.use("/api/alerts", alertRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
-app.use("/api/reports", reportRoutes);
-app.use((_req, res) => res.status(404).json({ message: "Not found" }));
+app.use("/api/reports", reportRoutes);
+
+// SPA fallback: serve index.html for all non-API routes
+app.get("*", (_req, res) => res.sendFile(path.join(distPath, "index.html")));
+
 app.use(errorHandler);
 
 (async () => {
