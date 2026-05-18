@@ -18,14 +18,7 @@ export interface AuthResponse {
 export type VehicleStatus = "available" | "rented" | "service" | "idle";
 
 export interface Vehicle {
-<<<<<<< HEAD
-  id: string;
-  vehicle_number: string;
-  model: string;
-  status: VehicleStatus;
-  hub: string;
-  created_at: string;
-=======
+
   _id: string;
   vehicleId: string;
   numberPlate: string;
@@ -36,25 +29,12 @@ export interface Vehicle {
   health: "good" | "fair" | "poor";
   lastServiceDate?: string;
   createdAt: string;
-  updatedAt: string;
->>>>>>> 6cd35a0 (Initial commit)
-}
+  updatedAt: string;}
 
 export type BookingStatus = "active" | "completed" | "overdue" | "pending";
 
 export interface Booking {
-<<<<<<< HEAD
-  id: string;
-  rider_name: string;
-  phone: string;
-  vehicle_id: string;
-  start_date: string;
-  end_date: string;
-  allowed_km: number;
-  current_km: number;
-  status: BookingStatus;
-  created_at: string;
-=======
+
   _id: string;
   bookingId: string;
   riderName: string;
@@ -67,9 +47,7 @@ export interface Booking {
   status: BookingStatus;
   amount: number;
   createdAt: string;
-  updatedAt: string;
->>>>>>> 6cd35a0 (Initial commit)
-}
+  updatedAt: string;}
 
 export type AlertSeverity = "info" | "warning" | "critical";
 export type AlertType = "rider" | "employee" | "management";

@@ -8,13 +8,6 @@ import { ErrorState } from "@/components/states/ErrorState";
 const ReportsPage = () => {
   const { data, isLoading, error, refetch } = useReportSummary();
 
-<<<<<<< HEAD
-=======
-  if (error) {
-    return <ErrorState message="Failed to load reports" onRetry={() => refetch()} />;
-  }
-
->>>>>>> 6cd35a0 (Initial commit)
   if (isLoading || !data) {
     return (
       <div className="space-y-6">
@@ -26,11 +19,7 @@ const ReportsPage = () => {
       </div>
     );
   }
-<<<<<<< HEAD
-  if (error) return <ErrorState message="Failed to load reports" onRetry={() => refetch()} />;
-=======
->>>>>>> 6cd35a0 (Initial commit)
-
+
   const statusColors: Record<string, string> = {
     available: "hsl(142 71% 42%)",
     rented: "hsl(216 100% 50%)",

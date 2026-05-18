@@ -50,11 +50,7 @@ const LoginPage = () => {
                 <Input
                   id="username"
                   className="pl-9"
-<<<<<<< HEAD
-                  placeholder="zargo, admin@zargo.com, or staff"
-=======
                   placeholder="Email or username"
->>>>>>> 6cd35a0 (Initial commit)
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   autoComplete="username"

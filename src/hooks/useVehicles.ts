@@ -10,18 +10,11 @@ export const useVehicles = () => useQuery({ queryKey: KEY, queryFn: vehicleServi
 export const useAddVehicle = () => {
   const qc = useQueryClient();
   return useMutation({
-<<<<<<< HEAD
-    mutationFn: (payload: Omit<Vehicle, "id" | "created_at">) => vehicleService.create(payload),
-    onSuccess: (v) => {
-      qc.invalidateQueries({ queryKey: KEY });
-      notify.success("Vehicle added", `${v.vehicle_number} added successfully.`);
-=======
+
     mutationFn: (payload: Omit<Vehicle, "_id" | "createdAt" | "updatedAt">) => vehicleService.create(payload),
     onSuccess: (v) => {
       qc.invalidateQueries({ queryKey: KEY });
-      notify.success("Vehicle added", `${v.numberPlate} added successfully.`);
->>>>>>> 6cd35a0 (Initial commit)
-    },
+      notify.success("Vehicle added", `${v.numberPlate} added successfully.`);    },
     onError: (e: { message: string }) => notify.error("Failed to add vehicle", e.message),
   });
 };

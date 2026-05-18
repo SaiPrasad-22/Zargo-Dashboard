@@ -9,15 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-<<<<<<< HEAD
-import { Booking } from "@/types";
-import { TableSkeleton } from "@/components/states/LoadingSkeleton";
-import { EmptyState } from "@/components/states/EmptyState";
-
-const BookingsPage = () => {
-  const bookingsQ = useBookings();
-  const bookings = bookingsQ.data ?? [];
-=======
 import { TableSkeleton } from "@/components/states/LoadingSkeleton";
 import { EmptyState } from "@/components/states/EmptyState";
 
@@ -37,21 +28,11 @@ interface BookingForm {
 const BookingsPage = () => {
   const bookingsQ = useBookings();
   const bookings = (bookingsQ.data ?? []) as any[];
->>>>>>> 6cd35a0 (Initial commit)
   const { data: vehicles = [] } = useVehicles();
   const addBooking = useAddBooking();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-<<<<<<< HEAD
-  const [form, setForm] = useState({ rider_name: "", phone: "", vehicle_id: "", start_date: "", end_date: "", allowed_km: 1500, current_km: 0, status: "active" as Booking["status"] });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const filtered = bookings.filter((b) => {
-    const matchSearch = b.rider_name.toLowerCase().includes(search.toLowerCase()) ||
-      b.id.toLowerCase().includes(search.toLowerCase()) ||
-      b.vehicle_id.toLowerCase().includes(search.toLowerCase());
-=======
   const [form, setForm] = useState<BookingForm>({ riderName: "", phone: "", vehicle: "", startDate: "", endDate: "", kmLimit: 1500, kmUsed: 0, status: "active" });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -69,7 +50,6 @@ const BookingsPage = () => {
     const matchSearch = b.riderName.toLowerCase().includes(search.toLowerCase()) ||
       b.bookingId.toLowerCase().includes(search.toLowerCase()) ||
       vehicleText.toLowerCase().includes(search.toLowerCase());
->>>>>>> 6cd35a0 (Initial commit)
     const matchStatus = statusFilter === "all" || b.status === statusFilter;
     return matchSearch && matchStatus;
   });
@@ -84,19 +64,6 @@ const BookingsPage = () => {
 
   const handleSubmit = () => {
     const newErrors: Record<string, string> = {};
-<<<<<<< HEAD
-    if (!form.rider_name.trim()) newErrors.rider_name = "Rider name is required";
-    if (!form.phone.trim()) newErrors.phone = "Phone is required";
-    if (!form.vehicle_id) newErrors.vehicle_id = "Vehicle is required";
-    if (!form.start_date) newErrors.start_date = "Start date is required";
-    if (!form.end_date) newErrors.end_date = "End date is required";
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
-
-    addBooking.mutate(form, {
-      onSuccess: () => {
-        setForm({ rider_name: "", phone: "", vehicle_id: "", start_date: "", end_date: "", allowed_km: 1500, current_km: 0, status: "active" });
-=======
     if (!form.riderName.trim()) newErrors.riderName = "Rider name is required";
     if (!form.phone.trim()) newErrors.phone = "Phone is required";
     if (!form.vehicle) newErrors.vehicle = "Vehicle is required";
@@ -108,7 +75,6 @@ const BookingsPage = () => {
     addBooking.mutate(form as any, {
       onSuccess: () => {
         setForm({ riderName: "", phone: "", vehicle: "", startDate: "", endDate: "", kmLimit: 1500, kmUsed: 0, status: "active" });
->>>>>>> 6cd35a0 (Initial commit)
         setErrors({});
         setOpen(false);
       },
@@ -131,13 +97,8 @@ const BookingsPage = () => {
             <div className="space-y-3 pt-2">
               <div className="space-y-1.5">
                 <Label>Rider Name</Label>
-<<<<<<< HEAD
-                <Input placeholder="e.g. Rahul Sharma" value={form.rider_name} onChange={(e) => setForm({ ...form, rider_name: e.target.value })} />
-                {errors.rider_name && <p className="text-xs text-destructive">{errors.rider_name}</p>}
-=======
                 <Input placeholder="e.g. Rahul Sharma" value={form.riderName} onChange={(e) => setForm({ ...form, riderName: e.target.value })} />
                 {errors.riderName && <p className="text-xs text-destructive">{errors.riderName}</p>}
->>>>>>> 6cd35a0 (Initial commit)
               </div>
               <div className="space-y-1.5">
                 <Label>Phone Number</Label>
@@ -146,17 +107,6 @@ const BookingsPage = () => {
               </div>
               <div className="space-y-1.5">
                 <Label>Vehicle</Label>
-<<<<<<< HEAD
-              <Select value={form.vehicle_id} onValueChange={(v) => setForm({ ...form, vehicle_id: v })}>
-                <SelectTrigger><SelectValue placeholder="Select available vehicle" /></SelectTrigger>
-                <SelectContent>
-                  {vehicles.filter((v) => v.status === "available").map((v) => (
-                    <SelectItem key={v.id} value={v.id}>{v.model} – {v.vehicle_number}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-                {errors.vehicle_id && <p className="text-xs text-destructive">{errors.vehicle_id}</p>}
-=======
               <Select value={form.vehicle} onValueChange={(v) => setForm({ ...form, vehicle: v })}>
                 <SelectTrigger><SelectValue placeholder="Select available vehicle" /></SelectTrigger>
                 <SelectContent>
@@ -173,20 +123,10 @@ const BookingsPage = () => {
                 </SelectContent>
               </Select>
                 {errors.vehicle && <p className="text-xs text-destructive">{errors.vehicle}</p>}
->>>>>>> 6cd35a0 (Initial commit)
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>Start Date</Label>
-<<<<<<< HEAD
-                  <Input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} />
-                  {errors.start_date && <p className="text-xs text-destructive">{errors.start_date}</p>}
-                </div>
-                <div className="space-y-1.5">
-                  <Label>End Date</Label>
-                  <Input type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} />
-                  {errors.end_date && <p className="text-xs text-destructive">{errors.end_date}</p>}
-=======
                   <Input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
                   {errors.startDate && <p className="text-xs text-destructive">{errors.startDate}</p>}
                 </div>
@@ -194,16 +134,11 @@ const BookingsPage = () => {
                   <Label>End Date</Label>
                   <Input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} />
                   {errors.endDate && <p className="text-xs text-destructive">{errors.endDate}</p>}
->>>>>>> 6cd35a0 (Initial commit)
                 </div>
               </div>
               <div className="space-y-1.5">
                 <Label>KM Limit</Label>
-<<<<<<< HEAD
-              <Input type="number" placeholder="Allowed KM" value={form.allowed_km} onChange={(e) => setForm({ ...form, allowed_km: Number(e.target.value) })} />
-=======
-              <Input type="number" placeholder="Allowed KM" value={form.kmLimit} onChange={(e) => setForm({ ...form, kmLimit: Number(e.target.value) })} />
->>>>>>> 6cd35a0 (Initial commit)
+                <Input type="number" placeholder="Allowed KM" value={form.kmLimit} onChange={(e) => setForm({ ...form, kmLimit: Number(e.target.value) })} />
               </div>
               <Button className="w-full" onClick={handleSubmit}>Save</Button>
             </div>
@@ -238,11 +173,8 @@ const BookingsPage = () => {
       <div className="bg-card rounded-xl border overflow-x-auto">
         {bookingsQ.isLoading ? (
           <TableSkeleton rows={6} cols={7} />
-<<<<<<< HEAD
-=======
         ) : bookingsQ.error ? (
           <EmptyState title="Failed to load bookings" description="Check your backend connection or refresh the page." />
->>>>>>> 6cd35a0 (Initial commit)
         ) : filtered.length === 0 ? (
           <EmptyState title="No bookings" description="Try adjusting your filters or create a booking." />
         ) : (
@@ -255,32 +187,6 @@ const BookingsPage = () => {
             </tr>
           </thead>
           <tbody>
-<<<<<<< HEAD
-            {filtered.map((b) => (
-              <tr key={b.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-                <td className="px-5 py-3 font-medium whitespace-nowrap text-primary">{b.id}</td>
-                <td className="px-5 py-3 whitespace-nowrap">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center shrink-0">
-                      {initials(b.rider_name)}
-                    </div>
-                    <div>
-                      <div className="font-medium">{b.rider_name}</div>
-                      <div className="text-xs text-muted-foreground">{b.phone}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-5 py-3 whitespace-nowrap">{b.vehicle_id}</td>
-                <td className="px-5 py-3 whitespace-nowrap text-muted-foreground">{b.start_date}</td>
-                <td className="px-5 py-3 whitespace-nowrap text-muted-foreground">{b.end_date}</td>
-                <td className="px-5 py-3 whitespace-nowrap">
-                  <span className={b.current_km > b.allowed_km ? "text-destructive font-semibold" : ""}>{b.current_km}</span>
-                  <span className="text-muted-foreground">/{b.allowed_km}</span>
-                </td>
-                <td className="px-5 py-3 whitespace-nowrap"><StatusBadge status={b.status} /></td>
-              </tr>
-            ))}
-=======
             {filtered.map((b) => {
               const vehicle = (vehicles as any[]).find((v) => getVehicleId(v) === b.vehicle);
               return (
@@ -308,7 +214,6 @@ const BookingsPage = () => {
                 </tr>
               );
             })}
->>>>>>> 6cd35a0 (Initial commit)
           </tbody>
         </table>
         )}

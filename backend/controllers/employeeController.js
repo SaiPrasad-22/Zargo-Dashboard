@@ -1,16 +1,11 @@
 const Employee = require("../models/Employee");
-<<<<<<< HEAD
-=======
-const User = require("../models/User");
->>>>>>> 6cd35a0 (Initial commit)
 
+const User = require("../models/User");
 exports.list = async (_req, res, next) => {
   try { res.json(await Employee.find().sort({ createdAt: -1 })); } catch (e) { next(e); }
 };
 exports.create = async (req, res, next) => {
-<<<<<<< HEAD
-  try { res.status(201).json(await Employee.create(req.body)); } catch (e) { next(e); }
-=======
+
   try {
     const { name, email, role = "Staff", phone, status = "Active", onboardings = 0, hub = "HQ" } = req.body;
     const normalizedEmail = (email || "").toLowerCase().trim();
@@ -45,9 +40,7 @@ exports.create = async (req, res, next) => {
     res.status(201).json({ employee, credentials: { email: user.email, password } });
   } catch (e) {
     next(e);
-  }
->>>>>>> 6cd35a0 (Initial commit)
-};
+  }};
 exports.update = async (req, res, next) => {
   try {
     const item = await Employee.findByIdAndUpdate(req.params.id, req.body, { new: true });

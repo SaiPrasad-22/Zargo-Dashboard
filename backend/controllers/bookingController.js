@@ -13,16 +13,12 @@ exports.get = async (req, res, next) => {
 };
 exports.create = async (req, res, next) => {
   try {
-<<<<<<< HEAD
-    const item = await Booking.create(req.body);
-=======
+
     const payload = {
       ...req.body,
       bookingId: req.body.bookingId || `BKG-${Date.now()}`,
     };
-    const item = await Booking.create(payload);
->>>>>>> 6cd35a0 (Initial commit)
-    if (item.vehicle && item.status === "active") {
+    const item = await Booking.create(payload);    if (item.vehicle && item.status === "active") {
       await Vehicle.findByIdAndUpdate(item.vehicle, { status: "rented" });
     }
     res.status(201).json(item);

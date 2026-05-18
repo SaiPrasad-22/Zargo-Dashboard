@@ -1,10 +1,6 @@
 import { create } from "zustand";
 import { Vehicle, Booking, Alert, Employee } from "./types";
-<<<<<<< HEAD
-import { vehicles as dummyVehicles, bookings as dummyBookings, alerts as dummyAlerts, employees as dummyEmployees } from "./dummyData";
-=======
->>>>>>> 6cd35a0 (Initial commit)
-
+
 function generateAlerts(bookings: Booking[], existingManualAlerts: Alert[]): Alert[] {
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
@@ -62,18 +58,11 @@ interface AppState {
 }
 
 export const useStore = create<AppState>((set) => ({
-<<<<<<< HEAD
-  vehicles: dummyVehicles,
-  bookings: applyBookingStatuses(dummyBookings),
-  alerts: generateAlerts(applyBookingStatuses(dummyBookings), dummyAlerts),
-  employees: dummyEmployees,
-=======
+
   vehicles: [],
   bookings: [],
   alerts: [],
-  employees: [],
->>>>>>> 6cd35a0 (Initial commit)
-
+  employees: [],
   addVehicle: (v) => set((s) => ({
     vehicles: [...s.vehicles, { ...v, id: `V${String(s.vehicles.length + 1).padStart(3, "0")}`, created_at: new Date().toISOString().split("T")[0] }],
   })),

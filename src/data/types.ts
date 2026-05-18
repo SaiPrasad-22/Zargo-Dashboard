@@ -1,45 +1,5 @@
 export interface Vehicle {
-<<<<<<< HEAD
-  id: string;
-  vehicle_number: string;
-  model: string;
-  status: "available" | "rented" | "service" | "idle";
-  hub: string;
-  created_at: string;
-}
 
-export interface Booking {
-  id: string;
-  rider_name: string;
-  phone: string;
-  vehicle_id: string;
-  start_date: string;
-  end_date: string;
-  allowed_km: number;
-  current_km: number;
-  status: "active" | "completed" | "overdue" | "pending";
-  created_at: string;
-}
-
-export interface Alert {
-  id: string;
-  message: string;
-  type: "rider" | "employee" | "management";
-  severity: "info" | "warning" | "critical";
-  status: "unread" | "read";
-  created_at: string;
-}
-
-export interface Employee {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  role: "Admin" | "Manager" | "Staff";
-  onboard_count: number;
-  join_date: string;
-  status: "Active" | "Inactive";
-=======
   _id: string;
   vehicleId: string;
   model: string;
@@ -105,6 +65,4 @@ export interface User {
 
 export interface ApiError {
   message: string;
-  status?: number;
->>>>>>> 6cd35a0 (Initial commit)
-}
+  status?: number;}

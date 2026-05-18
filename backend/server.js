@@ -10,17 +10,12 @@ const bookingRoutes = require("./routes/bookingRoutes");
 const alertRoutes = require("./routes/alertRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
-<<<<<<< HEAD
-=======
-const reportRoutes = require("./routes/reportRoutes");
->>>>>>> 6cd35a0 (Initial commit)
 
+const reportRoutes = require("./routes/reportRoutes");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-<<<<<<< HEAD
-app.use(cors({ origin: process.env.CORS_ORIGIN || "*", credentials: true }));
-=======
+
 const rawOrigins = process.env.CORS_ORIGIN || "*";
 const corsOrigins = rawOrigins.split(",").map((origin) => origin.trim()).filter(Boolean);
 const corsOptions = {
@@ -28,9 +23,7 @@ const corsOptions = {
   credentials: true,
 };
 
-app.use(cors(corsOptions));
->>>>>>> 6cd35a0 (Initial commit)
-app.use(express.json());
+app.use(cors(corsOptions));app.use(express.json());
 
 app.get("/", (_req, res) => res.send("Zargo Backend Running"));
 app.get("/api/health", (_req, res) => res.json({ ok: true, ts: Date.now() }));
@@ -41,11 +34,8 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/alerts", alertRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-<<<<<<< HEAD
-=======
-app.use("/api/reports", reportRoutes);
->>>>>>> 6cd35a0 (Initial commit)
 
+app.use("/api/reports", reportRoutes);
 app.use((_req, res) => res.status(404).json({ message: "Not found" }));
 app.use(errorHandler);
 

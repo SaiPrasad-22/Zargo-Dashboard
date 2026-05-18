@@ -2,14 +2,6 @@ import { apiClient, mockOr, setAuthToken, clearAuthToken, getAuthToken } from "@
 import { AuthResponse, User } from "@/types";
 
 const USER_CACHE_KEY = "zargo_user";
-<<<<<<< HEAD
-
-const MOCK_USERS: { username: string; email: string; password: string; user: User }[] = [
-  { username: "zargo", email: "admin@zargo.com", password: "Zargo2026", user: { id: "U1", username: "zargo", email: "admin@zargo.com", role: "admin" } },
-  { username: "staff", email: "staff@zargo.com", password: "Staff123", user: { id: "U2", username: "staff", email: "staff@zargo.com", role: "staff" } },
-];
-
-=======
 const MOCK_USER_STORE_KEY = "mock_employee_users";
 
 const DEFAULT_MOCK_USERS: { username: string; email: string; password: string; user: User }[] = [
@@ -36,23 +28,15 @@ const saveMockUser = (user: { username: string; email: string; password: string;
     /* ignore */
   }
 };
-
->>>>>>> 6cd35a0 (Initial commit)
 export const authService = {
   async login(identifier: string, password: string): Promise<AuthResponse> {
     return mockOr(
       () => {
-<<<<<<< HEAD
-        const match = MOCK_USERS.find(
-          (u) =>
-            (u.username.toLowerCase() === identifier.toLowerCase() ||
-=======
+
         const mockUsers = readMockUsers();
         const match = mockUsers.find(
           (u) =>
-            (u.username?.toLowerCase() === identifier.toLowerCase() ||
->>>>>>> 6cd35a0 (Initial commit)
-              u.email.toLowerCase() === identifier.toLowerCase()) &&
+            (u.username?.toLowerCase() === identifier.toLowerCase() ||              u.email.toLowerCase() === identifier.toLowerCase()) &&
             u.password === password
         );
         if (!match) throw { message: "Invalid credentials", status: 401 };

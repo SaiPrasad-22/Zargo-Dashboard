@@ -10,22 +10,14 @@ export const useBookings = () => useQuery({ queryKey: KEY, queryFn: bookingServi
 export const useAddBooking = () => {
   const qc = useQueryClient();
   return useMutation({
-<<<<<<< HEAD
-    mutationFn: (payload: Omit<Booking, "id" | "created_at">) => bookingService.create(payload),
-=======
-    mutationFn: (payload: Omit<Booking, "_id" | "createdAt" | "updatedAt">) => bookingService.create(payload),
->>>>>>> 6cd35a0 (Initial commit)
-    onSuccess: (b) => {
+
+    mutationFn: (payload: Omit<Booking, "_id" | "createdAt" | "updatedAt">) => bookingService.create(payload),    onSuccess: (b) => {
       qc.invalidateQueries({ queryKey: KEY });
       qc.invalidateQueries({ queryKey: ["vehicles"] });
       qc.invalidateQueries({ queryKey: ["alerts"] });
       qc.invalidateQueries({ queryKey: ["dashboard-stats"] });
-<<<<<<< HEAD
-      notify.success("Booking created", `Booking for ${b.rider_name} created.`);
-=======
-      notify.success("Booking created", `Booking for ${b.riderName} created.`);
->>>>>>> 6cd35a0 (Initial commit)
-    },
+
+      notify.success("Booking created", `Booking for ${b.riderName} created.`);    },
     onError: (e: unknown) => notify.apiError(e),
   });
 };

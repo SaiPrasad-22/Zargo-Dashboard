@@ -11,11 +11,7 @@ export const useAddEmployee = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (payload: Omit<Employee, "id">) => employeeService.create(payload),
-<<<<<<< HEAD
-    onSuccess: (e) => {
-      qc.invalidateQueries({ queryKey: KEY });
-      notify.success("Employee added", `${e.name} joined the team.`);
-=======
+
     onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: KEY });
       const payload = (result as any).employee ?? result;
@@ -25,9 +21,7 @@ export const useAddEmployee = () => {
         credentials
           ? `Login: ${credentials.email} | Password: ${credentials.password}`
           : `${payload.name} joined the team.`
-      );
->>>>>>> 6cd35a0 (Initial commit)
-    },
+      );    },
     onError: (e: unknown) => notify.apiError(e),
   });
 };

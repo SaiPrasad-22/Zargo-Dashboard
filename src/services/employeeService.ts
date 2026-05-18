@@ -2,8 +2,7 @@ import { apiClient, mockOr } from "@/api/client";
 import { Employee } from "@/types";
 import { useStore } from "@/data/store";
 
-<<<<<<< HEAD
-=======
+
 const MOCK_EMPLOYEE_USER_STORE_KEY = "mock_employee_users";
 
 const saveMockEmployeeUser = (email: string, role: string) => {
@@ -21,35 +20,23 @@ const saveMockEmployeeUser = (email: string, role: string) => {
     return { email, password: "Welcome123" };
   }
 };
-
->>>>>>> 6cd35a0 (Initial commit)
-export const employeeService = {
+export const employeeService = {
   async list(): Promise<Employee[]> {
     return mockOr(
       () => useStore.getState().employees,
       async () => (await apiClient.get<Employee[]>("/employees")).data
     );
   },
-<<<<<<< HEAD
-  async create(payload: Omit<Employee, "id">): Promise<Employee> {
-=======
-  async create(payload: Omit<Employee, "id">): Promise<Employee | { employee: Employee; credentials: { email: string; password: string } }> {
->>>>>>> 6cd35a0 (Initial commit)
-    return mockOr(
+
+  async create(payload: Omit<Employee, "id">): Promise<Employee | { employee: Employee; credentials: { email: string; password: string } }> {    return mockOr(
       () => {
         useStore.getState().addEmployee(payload);
         const list = useStore.getState().employees;
-<<<<<<< HEAD
-        return list[list.length - 1];
-      },
-      async () => (await apiClient.post<Employee>("/employees", payload)).data
-=======
+
         const employee = list[list.length - 1];
         const credentials = saveMockEmployeeUser(payload.email, payload.role);
         return { employee, credentials };
       },
-      async () => (await apiClient.post<{ employee: Employee; credentials: { email: string; password: string } }>("/employees", payload)).data
->>>>>>> 6cd35a0 (Initial commit)
-    );
+      async () => (await apiClient.post<{ employee: Employee; credentials: { email: string; password: string } }>("/employees", payload)).data    );
   },
 };
