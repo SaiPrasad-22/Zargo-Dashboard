@@ -36,7 +36,8 @@ export const authService = {
         const mockUsers = readMockUsers();
         const match = mockUsers.find(
           (u) =>
-            (u.username?.toLowerCase() === identifier.toLowerCase() ||              u.email.toLowerCase() === identifier.toLowerCase()) &&
+            (u.username?.toLowerCase() === identifier.toLowerCase() ||
+              u.email.toLowerCase() === identifier.toLowerCase()) &&
             u.password === password
         );
         if (!match) throw { message: "Invalid credentials", status: 401 };
@@ -67,6 +68,18 @@ export const authService = {
       async () => {
         const { data } = await apiClient.get<User>("/auth/me");
         return data;
+      }
+    );
+  },
+
+  async changePassword(oldPassword: string | undefined, newPassword: string): Promise<void> {
+    return mockOr(
+      () => {
+        // Mock: accept change
+        return Promise.resolve();
+      },
+      async () => {
+        await apiClient.post("/auth/change-password", { oldPassword, newPassword });
       }
     );
   },

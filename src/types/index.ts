@@ -8,6 +8,7 @@ export interface User {
   email?: string;
   role: UserRole;
   hub?: string;
+  forcePasswordChange?: boolean;
 }
 
 export interface AuthResponse {
@@ -29,7 +30,8 @@ export interface Vehicle {
   health: "good" | "fair" | "poor";
   lastServiceDate?: string;
   createdAt: string;
-  updatedAt: string;}
+  updatedAt: string;
+}
 
 export type BookingStatus = "active" | "completed" | "overdue" | "pending";
 
@@ -47,7 +49,8 @@ export interface Booking {
   status: BookingStatus;
   amount: number;
   createdAt: string;
-  updatedAt: string;}
+  updatedAt: string;
+}
 
 export type AlertSeverity = "info" | "warning" | "critical";
 export type AlertType = "rider" | "employee" | "management";

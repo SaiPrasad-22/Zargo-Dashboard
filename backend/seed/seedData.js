@@ -20,9 +20,9 @@ const Employee = require("../models/Employee");
     ]);
 
     console.log("Seeding users...");
+    // Only create the admin user. Staff logins will be created by the admin via the employees API.
     await User.create([
-      { name: "Zargo Admin", email: "admin@zargo.in", password: "Zargo@123", role: "admin", hub: "HQ" },
-      { name: "Zargo Staff", email: "staff@zargo.in", password: "Staff@123", role: "staff", hub: "HQ" },
+      { name: "Zargo Admin", email: "admin@zargo.in", password: "Zargo@123", role: "admin", hub: "HQ", forcePasswordChange: false },
     ]);
 
     console.log("Seeding vehicles...");
@@ -56,15 +56,11 @@ const Employee = require("../models/Employee");
       { title: "Service due", type: "management", message: "ZRG-003 service window opens tomorrow", severity: "info", status: "unread" },
     ]);
 
-    console.log("Seeding employees...");
-    await Employee.create([
-      { name: "Priya Sharma", email: "priya@zargo.in", role: "Manager", phone: "+919811112222", status: "Active", onboardings: 24 },
-      { name: "Arjun Mehta", email: "arjun@zargo.in", role: "Staff", phone: "+919811113333", status: "Active", onboardings: 12 },
-    ]);
+    // No demo employees seeded. Create employees via the admin UI/API after initial admin login.
 
     console.log("\nSeed complete.");
     console.log("Admin: admin@zargo.in / Zargo@123");
-    console.log("Staff: staff@zargo.in / Staff@123");
+    console.log("Note: staff login removed from seed. Create employee logins via the admin UI or employees API.");
     await mongoose.disconnect();
     process.exit(0);
   } catch (e) {

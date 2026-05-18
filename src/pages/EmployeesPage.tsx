@@ -29,6 +29,7 @@ const EmployeesPage = () => {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", role: "Staff" as Employee["role"], join_date: "" });
+  const [createdCreds, setCreatedCreds] = useState<{ email: string; password: string } | null>(null);
 
   const totalOnboards = employees.reduce((s, e) => s + e.onboard_count, 0);
   const activeCount = employees.filter((e) => e.status === "Active").length;
@@ -44,9 +45,14 @@ const EmployeesPage = () => {
     addEmployee.mutate(
       { ...form, onboard_count: 0, status: "Active", join_date: form.join_date || new Date().toISOString().split("T")[0] },
       {
-        onSuccess: () => {
+        onSuccess: (res: any) => {
           setForm({ name: "", email: "", phone: "", role: "Staff", join_date: "" });
-          setOpen(false);
+          const creds = (res as any)?.credentials ?? null;
+          if (creds) {
+            setCreatedCreds({ email: creds.email, password: creds.password });
+          } else {
+            setOpen(false);
+          }
         },
       }
     );
@@ -163,49 +169,98 @@ const EmployeesPage = () => {
 
       {/* Add Employee Modal */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Add New Employee</DialogTitle>
-            <DialogDescription>Add a new team member to your organization.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 pt-2">
-            <div>
-              <Label>Full Name</Label>
-              <Input placeholder="Enter full name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Email Address</Label>
-                <Input placeholder="email@zargo.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+        <DialogContent className="sm:max-w-lg z-50 overflow-auto">
+            <DialogHeader>
+              <DialogTitle>Add New Employee</DialogTitle>
+              <DialogDescription>Add a new team member to your organization.</DialogDescription>
+            </DialogHeader>
+
+            {createdCreds ? (
+              <div className="space-y-4 pt-4">
+                <div className="p-4 border rounded-md bg-muted/10">
+                  <h4 className="font-semibold">Employee created — credentials</h4>
+                  <p className="text-sm text-muted-foreground mt-1">Copy or download these credentials now — this password will not be visible again.</p>
+                  <div className="mt-4 space-y-3">
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-sm text-muted-foreground">Email</span>
+                      <span className="font-mono text-sm">{createdCreds.email}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-sm text-muted-foreground">Password</span>
+                      <span className="font-mono text-sm">{createdCreds.password}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 justify-end">
+                  <Button variant="ghost" onClick={() => { navigator.clipboard?.writeText(createdCreds.email); }}>
+                    <Mail size={14} className="mr-2" />Copy Email
+                  </Button>
+                  <Button onClick={() => { navigator.clipboard?.writeText(createdCreds.password); }}>
+                    <ClipboardCheck size={14} className="mr-2" />Copy Password
+                  </Button>
+                  <Button variant="ghost" onClick={() => {
+                    const data = JSON.stringify(createdCreds, null, 2);
+                    const blob = new Blob([data], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url; a.download = `employee-${createdCreds.email}.json`; a.click(); URL.revokeObjectURL(url);
+                  }}>
+                    <FileCheck2 size={14} className="mr-2" />Download JSON
+                  </Button>
+                  <Button variant="ghost" onClick={() => {
+                    const csv = `email,password\n${createdCreds.email},${createdCreds.password}`;
+                    const blob = new Blob([csv], { type: "text/csv" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url; a.download = `employee-${createdCreds.email}.csv`; a.click(); URL.revokeObjectURL(url);
+                  }}>
+                    <FileCheck2 size={14} className="mr-2" />Download CSV
+                  </Button>
+                  <Button variant="outline" onClick={() => { setOpen(false); setCreatedCreds(null); }}>
+                    Done
+                  </Button>
+                </div>
               </div>
-              <div>
-                <Label>Phone Number</Label>
-                <Input placeholder="+1 (555) 000-0000" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            ) : (
+              <div className="space-y-4 pt-2">
+                <div>
+                  <Label>Full Name</Label>
+                  <Input placeholder="Enter full name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Email Address</Label>
+                    <Input placeholder="email@zargo.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label>Phone Number</Label>
+                    <Input placeholder="+1 (555) 000-0000" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Role</Label>
+                    <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v as Employee["role"] })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Admin">Admin</SelectItem>
+                        <SelectItem value="Manager">Manager</SelectItem>
+                        <SelectItem value="Staff">Staff</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Join Date</Label>
+                    <Input type="date" value={form.join_date} onChange={(e) => setForm({ ...form, join_date: e.target.value })} />
+                  </div>
+                </div>
+                <div className="flex justify-end gap-3 pt-2">
+                  <Button variant="outline" onClick={() => { setOpen(false); setCreatedCreds(null); }}>Cancel</Button>
+                  <Button onClick={handleAdd}>Add Employee</Button>
+                </div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Role</Label>
-                <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v as Employee["role"] })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                    <SelectItem value="Manager">Manager</SelectItem>
-                    <SelectItem value="Staff">Staff</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Join Date</Label>
-                <Input type="date" value={form.join_date} onChange={(e) => setForm({ ...form, join_date: e.target.value })} />
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 pt-2">
-              <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button onClick={handleAdd}>Add Employee</Button>
-            </div>
-          </div>
-        </DialogContent>
+            )}
+          </DialogContent>
       </Dialog>
     </div>
   );

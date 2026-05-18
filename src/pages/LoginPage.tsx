@@ -9,13 +9,16 @@ import zargoLogo from "@/assets/zargo-logo.png";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   if (isAuthenticated) {
+    if (user?.forcePasswordChange) {
+      return <Navigate to="/change-password" replace />;
+    }
     return <Navigate to="/" replace />;
   }
 
@@ -23,9 +26,13 @@ const LoginPage = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const ok = await login(username.trim(), password);
-    if (ok) {
-      navigate("/", { replace: true });
+    const user = await login(username.trim(), password);
+    if (user) {
+      if (user.forcePasswordChange) {
+        navigate("/change-password", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } else {
       setError("Invalid credentials");
       setLoading(false);
@@ -44,16 +51,16 @@ const LoginPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="username">Email or Username</Label>
+              <Label htmlFor="username">Email</Label>
               <div className="relative">
                 <UserIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="username"
                   className="pl-9"
-                  placeholder="Email or username"
+                  placeholder="Email"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  autoComplete="username"
+                  autoComplete="email"
                   required
                 />
               </div>

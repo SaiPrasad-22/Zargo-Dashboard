@@ -15,7 +15,7 @@ interface AuthContextValue {
   status: AuthStatus;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (identifier: string, password: string) => Promise<boolean>;
+  login: (identifier: string, password: string) => Promise<User | null>;
   logout: () => Promise<void>;
 }
 
@@ -81,10 +81,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem(USER_KEY, JSON.stringify(user));
       setStatus("authenticated");
       notify.success("Welcome back", user.name || user.username || user.email);
-      return true;
+      return user;
     } catch (e) {
       notify.apiError(e);
-      return false;
+      return null;
     }
   }, []);
 

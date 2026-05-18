@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useVehicles, useAddVehicle, useDeleteVehicle } from "@/hooks/useVehicles";
+import { useAuth } from "@/context/AuthContext";
 import StatusBadge from "@/components/StatusBadge";
 import { Plus, Trash2, MoreVertical, Battery } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,8 @@ const HUBS = ["Kukatpally", "Madhapur", "Gachibowli"];
 
 const VehiclesPage = () => {
 
-  const { role } = useAuth();  const vehiclesQ = useVehicles();
+  const { role } = useAuth();
+  const vehiclesQ = useVehicles();
   const vehicles = vehiclesQ.data ?? [];
   const addVehicle = useAddVehicle();
   const deleteVehicle = useDeleteVehicle();
@@ -28,7 +30,8 @@ const VehiclesPage = () => {
   const [form, setForm] = useState({ vehicleId: "", numberPlate: "", model: "", status: "available" as Vehicle["status"], hub: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Remove mock extras, use backend data  const statusDot: Record<string, string> = {
+  // Remove mock extras, use backend data
+  const statusDot: Record<string, string> = {
     available: "bg-success",
     rented: "bg-primary",
     service: "bg-warning",
@@ -38,13 +41,15 @@ const VehiclesPage = () => {
 
     good: "text-success",
     fair: "text-warning",
-    poor: "text-destructive",  };
+    poor: "text-destructive",
+  };
 
   const handleSubmit = () => {
     const newErrors: Record<string, string> = {};
 
     if (!form.vehicleId.trim()) newErrors.vehicleId = "Vehicle ID is required";
-    if (!form.numberPlate.trim()) newErrors.numberPlate = "Vehicle number is required";    if (!form.model) newErrors.model = "Model is required";
+    if (!form.numberPlate.trim()) newErrors.numberPlate = "Vehicle number is required";
+    if (!form.model) newErrors.model = "Model is required";
     if (!form.hub) newErrors.hub = "Hub is required";
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
@@ -52,7 +57,8 @@ const VehiclesPage = () => {
     addVehicle.mutate(form, {
       onSuccess: () => {
 
-        setForm({ vehicleId: "", numberPlate: "", model: "", status: "available", hub: "" });        setErrors({});
+        setForm({ vehicleId: "", numberPlate: "", model: "", status: "available", hub: "" });
+        setErrors({});
         setOpen(false);
       },
     });
@@ -81,7 +87,8 @@ const VehiclesPage = () => {
               <div className="space-y-1.5">
                 <Label>Vehicle Number</Label>
                 <Input placeholder="e.g. TG01AB1234" value={form.numberPlate} onChange={(e) => setForm({ ...form, numberPlate: e.target.value })} />
-                {errors.numberPlate && <p className="text-xs text-destructive">{errors.numberPlate}</p>}              </div>
+                {errors.numberPlate && <p className="text-xs text-destructive">{errors.numberPlate}</p>}
+              </div>
               <div className="space-y-1.5">
                 <Label>Model</Label>
                 <Select value={form.model} onValueChange={(v) => setForm({ ...form, model: v })}>
@@ -132,7 +139,8 @@ const VehiclesPage = () => {
           <thead className="sticky top-0 bg-muted/60 z-10">
             <tr className="border-b">
 
-              {["ID", "Number Plate", "Model", "Hub", "Battery", "Last Service", "Health", "Status", ""].map((h) => (                <th key={h} className="text-left px-5 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
+              {["ID", "Number Plate", "Model", "Hub", "Battery", "Last Service", "Health", "Status", ""].map((h) => (
+                <th key={h} className="text-left px-5 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
@@ -146,7 +154,8 @@ const VehiclesPage = () => {
                       {v.vehicleId}
                     </span>
                   </td>
-                  <td className="px-5 py-3 whitespace-nowrap font-mono text-xs">{v.numberPlate}</td>                  <td className="px-5 py-3 whitespace-nowrap">{v.model}</td>
+                  <td className="px-5 py-3 whitespace-nowrap font-mono text-xs">{v.numberPlate}</td>
+                  <td className="px-5 py-3 whitespace-nowrap">{v.model}</td>
                   <td className="px-5 py-3 whitespace-nowrap text-muted-foreground">{v.hub}</td>
                   <td className="px-5 py-3 whitespace-nowrap">
                     <div className="flex items-center gap-2">
@@ -176,7 +185,8 @@ const VehiclesPage = () => {
                     ) : null}
                   </td>
                 </tr>
-              ))}          </tbody>
+              ))}
+          </tbody>
         </table>
         )}
       </div>

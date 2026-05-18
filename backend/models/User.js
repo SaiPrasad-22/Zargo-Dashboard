@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema(
     password: { type: String, required: true, minlength: 6, select: false },
     role: { type: String, enum: ["admin", "staff"], default: "staff" },
     hub: { type: String, default: "HQ" },
+      forcePasswordChange: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
@@ -29,6 +30,7 @@ UserSchema.methods.toSafeJSON = function () {
     email: this.email,
     role: this.role,
     hub: this.hub,
+    forcePasswordChange: !!this.forcePasswordChange,
     createdAt: this.createdAt,
   };
 };

@@ -19,7 +19,7 @@ const FullPageLoader = ({ label = "Verifying session..." }: { label?: string }) 
 
 const ProtectedRoute = ({ children, requiredRole }: Props) => {
   const location = useLocation();
-  const { status, role } = useAuth();
+  const { status, role, user } = useAuth();
   const notifiedRef = useRef(false);
 
   useEffect(() => {
@@ -36,6 +36,9 @@ const ProtectedRoute = ({ children, requiredRole }: Props) => {
   if (status === "loading") return <FullPageLoader />;
   if (status === "unauthenticated") {
     return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+  if (user?.forcePasswordChange && location.pathname !== "/change-password") {
+    return <Navigate to="/change-password" replace />;
   }
   if (requiredRole && role !== requiredRole) {
     return <Navigate to="/" replace />;
