@@ -15,7 +15,7 @@ export const USE_MOCK = (import.meta.env.VITE_USE_MOCK ?? "true") !== "false";
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
-  timeout: 15000,
+  timeout: 60000,
 });
 
 apiClient.interceptors.request.use((config) => {
