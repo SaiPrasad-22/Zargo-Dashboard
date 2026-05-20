@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { Vehicle, Booking, Alert, Employee } from "./types";
-
+
+
 function generateAlerts(bookings: Booking[], existingManualAlerts: Alert[]): Alert[] {
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
@@ -45,6 +46,7 @@ interface AppState {
   vehicles: Vehicle[];
   bookings: Booking[];
   alerts: Alert[];
+  activities: import("@/types").Activity[];
   employees: Employee[];
   addVehicle: (v: Omit<Vehicle, "id" | "created_at">) => void;
   updateVehicle: (id: string, v: Partial<Vehicle>) => void;
@@ -53,6 +55,7 @@ interface AppState {
   updateBookingStatus: (id: string, status: Booking["status"]) => void;
   addAlert: (a: Omit<Alert, "id" | "created_at">) => void;
   markAlertRead: (id: string) => void;
+  addActivity: (a: Omit<import("@/types").Activity, "id" | "created_at">) => void;
   addEmployee: (e: Omit<Employee, "id">) => void;
   updateEmployeeCount: (id: string, count: number) => void;
 }
@@ -62,7 +65,9 @@ export const useStore = create<AppState>((set) => ({
   vehicles: [],
   bookings: [],
   alerts: [],
-  employees: [],
+  activities: [],
+  employees: [],
+
   addVehicle: (v) => set((s) => ({
     vehicles: [...s.vehicles, { ...v, id: `V${String(s.vehicles.length + 1).padStart(3, "0")}`, created_at: new Date().toISOString().split("T")[0] }],
   })),
@@ -75,23 +80,32 @@ export const useStore = create<AppState>((set) => ({
   addBooking: (b) => set((s) => {
     const newBookings = [...s.bookings, { ...b, id: `ZRG-${s.bookings.length + 100}`, created_at: new Date().toISOString().split("T")[0] }];
     const updated = applyBookingStatuses(newBookings);
-    return { bookings: updated, alerts: generateAlerts(updated, s.alerts) };
+    // add activity for booking created
+    const activityMsg = `New booking ${b.rider_name ?? b.riderName ?? ""} (${newBookings[newBookings.length - 1].id}) created`;
+    const newActivity = { id: `ACT-${s.activities.length + 1}`, type: "booking", message: activityMsg, created_at: new Date().toISOString() };
+    return { bookings: updated, alerts: generateAlerts(updated, s.alerts), activities: [newActivity, ...s.activities] };
   }),
   updateBookingStatus: (id, status) => set((s) => {
     const newBookings = s.bookings.map((x) => (x.id === id ? { ...x, status } : x));
     const updated = applyBookingStatuses(newBookings);
-    return { bookings: updated, alerts: generateAlerts(updated, s.alerts) };
+    // when status changes to 'active' or 'overdue' we can add activity
+    const msg = `Booking ${id} status updated to ${status}`;
+    const newActivity = { id: `ACT-${s.activities.length + 1}`, type: "booking", message: msg, created_at: new Date().toISOString() };
+    return { bookings: updated, alerts: generateAlerts(updated, s.alerts), activities: [newActivity, ...s.activities] };
   }),
   addAlert: (a) => set((s) => ({
     alerts: [{ ...a, id: `A${s.alerts.length + 1}`, created_at: new Date().toISOString().split("T")[0] }, ...s.alerts],
+    activities: [{ id: `ACT-${s.activities.length + 1}`, type: "alert", message: a.message, created_at: new Date().toISOString() }, ...s.activities],
   })),
   markAlertRead: (id) => set((s) => ({
     alerts: s.alerts.map((x) => (x.id === id ? { ...x, status: "read" as const } : x)),
   })),
   addEmployee: (e) => set((s) => ({
     employees: [...s.employees, { ...e, id: `E${String(s.employees.length + 1).padStart(3, "0")}` }],
+    activities: [{ id: `ACT-${s.activities.length + 1}`, type: "employee", message: `${e.name} added`, created_at: new Date().toISOString() }, ...s.activities],
   })),
   updateEmployeeCount: (id, count) => set((s) => ({
     employees: s.employees.map((x) => (x.id === id ? { ...x, onboard_count: count } : x)),
   })),
+  addActivity: (a) => set((s) => ({ activities: [{ ...a, id: `ACT-${s.activities.length + 1}`, created_at: new Date().toISOString() }, ...s.activities] })),
 }));

@@ -34,7 +34,7 @@ const LoginPage = () => {
         navigate("/", { replace: true });
       }
     } else {
-      setError("Invalid credentials");
+      setError("Connecting to dashboard...");
       setLoading(false);
     }
   };

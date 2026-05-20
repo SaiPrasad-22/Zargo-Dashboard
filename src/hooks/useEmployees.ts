@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { employeeService } from "@/services";
 import { Employee } from "@/types";
 import { notify } from "@/lib/notify";
+import { useStore } from "@/data/store";
 
 const KEY = ["employees"];
 
@@ -21,7 +22,11 @@ export const useAddEmployee = () => {
         credentials
           ? `Login: ${credentials.email} | Password: ${credentials.password}`
           : `${payload.name} joined the team.`
-      );    },
+      );
+      try {
+        useStore.getState().addActivity({ type: "employee", message: `${payload.name} added` });
+      } catch (e) {}
+    },
     onError: (e: unknown) => notify.apiError(e),
   });
 };
