@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import StatCard from "@/components/StatCard";
 import StatusBadge from "@/components/StatusBadge";
-import { Bike, CalendarDays, Battery, DollarSign, Bell, AlertTriangle, Zap, Users, Plus, FileCheck, BellPlus, Activity, Wrench, CreditCard, Repeat } from "lucide-react";
+import { Bike, CalendarDays, Battery, Bell, AlertTriangle, Zap, Users, Plus, FileCheck, BellPlus, Activity, Wrench, CreditCard, Repeat } from "lucide-react";
+import RupeeIcon from "@/components/ui/icons/RupeeIcon";
 import { useAuth } from "@/context/AuthContext";
 import { useEmployees } from "@/hooks/useEmployees";
 import { useStore } from "@/data/store";
@@ -25,7 +26,9 @@ const Dashboard = () => {
   const { role } = useAuth();
 
   const employeesQ = useEmployees();
-  const employees = employeesQ.data ?? [];
+  const employees = Array.isArray(employeesQ.data) ? employeesQ.data : [];
+
+  const getEmployeeOnboards = (employee: any) => Number(employee.onboard_count ?? employee.onboardings ?? 0) || 0;
 
   const quickActions = [
     { to: "/vehicles", label: "Add Vehicle", icon: Plus, color: "text-primary bg-primary/10" },
@@ -71,19 +74,15 @@ const Dashboard = () => {
       </div>
 
       {statsQ.isLoading || !stats ? (
-        <StatCardsSkeleton count={8} />
+        <StatCardsSkeleton count={4} />
       ) : statsQ.error ? (
         <ErrorState message="Failed to load stats" onRetry={() => statsQ.refetch()} />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard title="Total Vehicles" value={stats.totalVehicles} icon={Bike} subtitle="+2 added this month" />
-          <StatCard title="Active Rentals" value={stats.activeRentals} icon={CalendarDays} accent="primary" subtitle="Across all hubs" />
           <StatCard title="Available" value={stats.availableVehicles} icon={Battery} accent="success" subtitle="Ready to deploy" />
-          <StatCard title="Revenue" value={stats.revenue} icon={DollarSign} accent="accent" subtitle="This month" />
-          <StatCard title="Overdue Vehicles" value={stats.overdueVehicles} icon={AlertTriangle} accent="destructive" subtitle="Need attention" />
-          <StatCard title="Deployed" value={stats.deployedVehicles} icon={Zap} accent="primary" subtitle="On the road" />
-          <StatCard title="Total Customers" value={stats.totalCustomers} icon={Users} accent="accent" subtitle="Unique riders" />
-          <StatCard title="Unread Alerts" value={stats.unreadAlerts} icon={Bell} accent="warning" subtitle="Requires action" />
+          <StatCard title="Rented" value={stats.deployedVehicles} icon={CalendarDays} accent="primary" subtitle="Currently rented" />
+          <StatCard title="Service / Maintenance" value={stats.overdueVehicles} icon={Wrench} accent="accent" subtitle="Needs service attention" />
         </div>
       )}
 
@@ -105,11 +104,11 @@ const Dashboard = () => {
         <div className="bg-card rounded-xl border border-border/60 shadow-sm p-5">
           <h2 className="font-semibold mb-4 flex items-center gap-2"><Zap size={16} className="text-primary" /> Management Overview</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <StatCard title="Pending KYC Approvals" value={employees.filter((e) => e.onboard_count === 0).length} icon={FileCheck} accent="primary" subtitle="Awaiting review" />
+            <StatCard title="Pending KYC Approvals" value={employees.filter((e) => getEmployeeOnboards(e) === 0).length} icon={FileCheck} accent="primary" subtitle="Awaiting review" />
             <StatCard title="Renewals Due" value={stats?.overdueVehicles ?? 0} icon={Repeat} accent="warning" subtitle="Contracts expiring" />
             <StatCard title="Recovery Cases" value={stats?.overdueVehicles ?? 0} icon={AlertTriangle} accent="destructive" subtitle="Overdue recoveries" />
             <StatCard title="Service Requests" value={alerts.filter((a) => a.severity === "warning" || a.severity === "critical").length} icon={Wrench} accent="accent" subtitle="Open requests" />
-            <StatCard title="Staff Performance" value={employees.length ? Math.round((employees.reduce((s, e) => s + e.onboard_count, 0) / employees.length) * 10) / 10 : 0} icon={Users} accent="success" subtitle="Avg onboards" />
+            <StatCard title="Staff Performance" value={employees.length ? Math.round((employees.reduce((s, e) => s + getEmployeeOnboards(e), 0) / employees.length) * 10) / 10 : 0} icon={Users} accent="success" subtitle="Avg onboards" />
           </div>
         </div>
       )}

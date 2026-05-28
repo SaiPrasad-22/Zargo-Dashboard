@@ -1,5 +1,6 @@
 import StatCard from "@/components/StatCard";
-import { Bike, CalendarDays, Users, DollarSign, TrendingUp } from "lucide-react";
+import { Bike, CalendarDays, Users, TrendingUp } from "lucide-react";
+import RupeeIcon from "@/components/ui/icons/RupeeIcon";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar } from "recharts";
 import { useReportSummary } from "@/hooks/useReports";
 import { StatCardsSkeleton } from "@/components/states/LoadingSkeleton";
@@ -19,7 +20,8 @@ const ReportsPage = () => {
       </div>
     );
   }
-
+
+
   const statusColors: Record<string, string> = {
     available: "hsl(142 71% 42%)",
     rented: "hsl(216 100% 50%)",
@@ -40,7 +42,7 @@ const ReportsPage = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Fleet Size" value={data.fleetSize} icon={Bike} subtitle="Total vehicles" />
         <StatCard title="Total Bookings" value={data.totalBookings} icon={CalendarDays} accent="primary" subtitle={`${data.completedBookings} completed`} />
-        <StatCard title="Revenue" value="₹1,58,000" icon={DollarSign} accent="success" subtitle="+11% vs last month" />
+        <StatCard title="Revenue" value={new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(data.rentalTrend.reduce((s, r) => s + (r.revenue || 0), 0))} icon={RupeeIcon} accent="success" subtitle="+11% vs last month" />
         <StatCard title="Onboarded" value={data.totalOnboarded} icon={Users} accent="accent" subtitle="By team" />
       </div>
 

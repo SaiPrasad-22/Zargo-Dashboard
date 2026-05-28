@@ -21,7 +21,12 @@ const PORT = process.env.PORT || 5000;
 const rawOrigins = process.env.CORS_ORIGIN || "*";
 const corsOrigins = rawOrigins.split(",").map((origin) => origin.trim()).filter(Boolean);
 const corsOptions = {
-  origin: corsOrigins.length === 1 ? corsOrigins[0] : corsOrigins,
+  origin:
+    corsOrigins.length === 1 && corsOrigins[0] === "*"
+      ? true
+      : corsOrigins.length === 1
+      ? corsOrigins[0]
+      : corsOrigins,
   credentials: true,
 };
 

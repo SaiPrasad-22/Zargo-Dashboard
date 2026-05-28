@@ -9,7 +9,7 @@ export const clearAuthToken = () => localStorage.removeItem(TOKEN_KEY);
 
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  (import.meta.env.MODE === "development" ? "http://localhost:5000/api" : "/api");
+  (import.meta.env.MODE === "development" ? "/api" : "/api");
 export const USE_MOCK = (import.meta.env.VITE_USE_MOCK ?? "true") !== "false";
 
 export const apiClient: AxiosInstance = axios.create({

@@ -30,14 +30,12 @@ export interface Booking {
 }
 
 export interface Alert {
-  _id: string;
-  title: string;
+  id: string;
   type: "rider" | "employee" | "management";
   message: string;
   severity: "info" | "warning" | "critical";
   status: "unread" | "read";
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
 }
 
 export interface Employee {
@@ -65,4 +63,5 @@ export interface User {
 
 export interface ApiError {
   message: string;
-  status?: number;}
+  status?: number;
+}

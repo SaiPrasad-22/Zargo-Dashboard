@@ -30,3 +30,18 @@ export const useAddEmployee = () => {
     onError: (e: unknown) => notify.apiError(e),
   });
 };
+
+export const useDeleteEmployee = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => employeeService.delete(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: KEY });
+      notify.success("Employee deleted successfully");
+    },
+    onError: (e: unknown) => {
+      notify.error("Unable to delete employee");
+      notify.apiError(e);
+    },
+  });
+};

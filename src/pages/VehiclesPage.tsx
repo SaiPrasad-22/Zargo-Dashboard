@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useVehicles, useAddVehicle, useDeleteVehicle } from "@/hooks/useVehicles";
 import { useAuth } from "@/context/AuthContext";
 import StatusBadge from "@/components/StatusBadge";
-import { Plus, Trash2, MoreVertical, Battery } from "lucide-react";
+import { Plus, Trash2, MoreVertical, Battery, Truck, CalendarDays, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,9 @@ import { EmptyState } from "@/components/states/EmptyState";
 import { ErrorState } from "@/components/states/ErrorState";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import StatCard from "@/components/StatCard";
+import { useDateFilter } from "@/context/DateFilterContext";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 const MODELS = ["Quanta S", "Quanta S+"];
 const HUBS = ["Kukatpally", "Madhapur", "Gachibowli"];
@@ -26,6 +29,9 @@ const VehiclesPage = () => {
   const addVehicle = useAddVehicle();
   const deleteVehicle = useDeleteVehicle();
   const [open, setOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({ vehicleId: "", numberPlate: "", model: "", status: "available" as Vehicle["status"], hub: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -64,8 +70,48 @@ const VehiclesPage = () => {
     });
   };
 
+  const { range } = useDateFilter();
+
+  // Apply search param if any
+  const q = searchParams.get("query") ?? "";
+
+  const filteredVehicles = useMemo(() => {
+    let list = vehicles.slice();
+    if (statusFilter) {
+      if (statusFilter === "service") list = list.filter((v) => v.status === "service");
+      else list = list.filter((v) => v.status === statusFilter);
+    }
+    if (q) {
+      const qq = q.toLowerCase();
+      list = list.filter((v) => (v.numberPlate || v.vehicleId || "").toLowerCase().includes(qq) || (v.model || "").toLowerCase().includes(qq));
+    }
+    if (range?.start || range?.end) {
+      list = list.filter((v) => {
+        const dt = new Date(v.createdAt || v.created_at || v.updatedAt || new Date().toISOString());
+        if (range.start && dt < new Date(range.start)) return false;
+        if (range.end && dt > new Date(range.end)) return false;
+        return true;
+      });
+    }
+    return list;
+  }, [vehicles, statusFilter, q, range]);
+
+  const statsCards = [
+    { key: "total", title: "Total Vehicles", value: vehicles.length, icon: Truck, accent: "primary", subtitle: "+2 added this month" },
+    { key: "available", title: "Available", value: vehicles.filter((v) => v.status === "available").length, icon: Battery, accent: "success", subtitle: "Ready to deploy" },
+    { key: "rented", title: "Rented", value: vehicles.filter((v) => v.status === "rented").length, icon: CalendarDays, accent: "accent", subtitle: "Currently rented" },
+    { key: "service", title: "Service / Maintenance", value: vehicles.filter((v) => v.status === "service").length, icon: Wrench, accent: "warning", subtitle: "Needs service attention" },
+  ];
+
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {statsCards.map((c) => (
+          <div key={c.key} onClick={() => setStatusFilter(c.key === "total" ? null : c.key)} className={`cursor-pointer ${statusFilter === c.key ? "ring-2 ring-primary/30" : ""}`}>
+            <StatCard title={c.title} value={c.value} icon={c.icon} accent={c.accent as any} subtitle={c.subtitle} />
+          </div>
+        ))}
+      </div>
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Vehicles</h1>
@@ -146,7 +192,7 @@ const VehiclesPage = () => {
           </thead>
           <tbody>
 
-            {vehicles.map((v) => (
+            {filteredVehicles.map((v) => (
                 <tr key={v._id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                   <td className="px-5 py-3 font-medium whitespace-nowrap">
                     <span className="inline-flex items-center gap-2">

@@ -1,10 +1,10 @@
-import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 interface StatCardProps {
   title: string;
   value: string | number;
-  icon: LucideIcon;
+  icon: React.ElementType | React.ReactNode;
   accent?: "primary" | "warning" | "destructive" | "success" | "accent";
   subtitle?: string;
 }
@@ -26,7 +26,11 @@ const StatCard = ({ title, value, icon: Icon, accent = "primary", subtitle }: St
         {subtitle && <p className="text-xs text-muted-foreground mt-1 truncate">{subtitle}</p>}
       </div>
       <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center shrink-0", iconBg[accent])}>
-        <Icon size={18} />
+        {React.isValidElement(Icon) ? (
+          Icon
+        ) : (
+          <Icon size={18} />
+        )}
       </div>
     </div>
   </div>

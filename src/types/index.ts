@@ -91,7 +91,7 @@ export interface DashboardStats {
   overdueVehicles: number;
   totalCustomers: number;
   unreadAlerts: number;
-  revenue: string;
+  revenue: number;
 }
 
 export interface ReportSummary {

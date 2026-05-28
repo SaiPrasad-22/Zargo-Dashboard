@@ -16,6 +16,7 @@ import SettingsPage from "@/pages/SettingsPage";
 import LoginPage from "@/pages/LoginPage";
 import NotFound from "@/pages/NotFound";
 import { AuthProvider } from "@/context/AuthContext";
+import { DateFilterProvider } from "@/context/DateFilterContext";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <DateFilterProvider>
         <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -47,6 +49,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
         </AuthProvider>
+        </DateFilterProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

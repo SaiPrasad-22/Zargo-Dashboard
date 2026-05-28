@@ -57,6 +57,7 @@ interface AppState {
   markAlertRead: (id: string) => void;
   addActivity: (a: Omit<import("@/types").Activity, "id" | "created_at">) => void;
   addEmployee: (e: Omit<Employee, "id">) => void;
+  removeEmployee: (id: string) => void;
   updateEmployeeCount: (id: string, count: number) => void;
 }
 
@@ -103,6 +104,9 @@ export const useStore = create<AppState>((set) => ({
   addEmployee: (e) => set((s) => ({
     employees: [...s.employees, { ...e, id: `E${String(s.employees.length + 1).padStart(3, "0")}` }],
     activities: [{ id: `ACT-${s.activities.length + 1}`, type: "employee", message: `${e.name} added`, created_at: new Date().toISOString() }, ...s.activities],
+  })),
+  removeEmployee: (id) => set((s) => ({
+    employees: s.employees.filter((x) => x.id !== id),
   })),
   updateEmployeeCount: (id, count) => set((s) => ({
     employees: s.employees.map((x) => (x.id === id ? { ...x, onboard_count: count } : x)),

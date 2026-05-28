@@ -3,10 +3,41 @@ import { bookingService } from "@/services";
 import { Booking } from "@/types";
 import { notify } from "@/lib/notify";
 import { useStore } from "@/data/store";
+import { useDateFilter } from "@/context/DateFilterContext";
 
 const KEY = ["bookings"];
 
-export const useBookings = () => useQuery({ queryKey: KEY, queryFn: bookingService.list });
+function rangeToFilter(range: ReturnType<typeof useDateFilter>['range']) {
+  if (!range) return undefined;
+  switch (range.key) {
+    case "today":
+    case "week":
+    case "month":
+    case "custom":
+      return { start: range.start, end: range.end };
+    default:
+      return undefined;
+  }
+}
+
+export const useBookings = () => {
+  const { range } = useDateFilter();
+  const filter = rangeToFilter(range);
+  return useQuery({
+    queryKey: ["bookings", range],
+    queryFn: async () => {
+      // use in-memory store for speed when mocking
+      const list = await bookingService.list();
+      if (!filter?.start && !filter?.end) return list;
+      return list.filter((b: any) => {
+        const dt = new Date(b.startDate ?? b.start_date ?? b.created_at ?? b.createdAt ?? "");
+        if (filter.start && dt < new Date(filter.start)) return false;
+        if (filter.end && dt > new Date(filter.end)) return false;
+        return true;
+      });
+    },
+  });
+};
 
 export const useAddBooking = () => {
   const qc = useQueryClient();

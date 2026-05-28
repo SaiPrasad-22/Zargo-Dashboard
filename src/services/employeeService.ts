@@ -20,7 +20,8 @@ const saveMockEmployeeUser = (email: string, role: string) => {
     return { email, password: "Welcome123" };
   }
 };
-export const employeeService = {
+
+export const employeeService = {
   async list(): Promise<Employee[]> {
     return mockOr(
       () => useStore.getState().employees,
@@ -28,7 +29,8 @@ const saveMockEmployeeUser = (email: string, role: string) => {
     );
   },
 
-  async create(payload: Omit<Employee, "id">): Promise<Employee | { employee: Employee; credentials: { email: string; password: string } }> {    return mockOr(
+  async create(payload: Omit<Employee, "id">): Promise<Employee | { employee: Employee; credentials: { email: string; password: string } }> {
+    return mockOr(
       () => {
         useStore.getState().addEmployee(payload);
         const list = useStore.getState().employees;
@@ -37,6 +39,17 @@ const saveMockEmployeeUser = (email: string, role: string) => {
         const credentials = saveMockEmployeeUser(payload.email, payload.role);
         return { employee, credentials };
       },
-      async () => (await apiClient.post<{ employee: Employee; credentials: { email: string; password: string } }>("/employees", payload)).data    );
+      async () => (await apiClient.post<{ employee: Employee; credentials: { email: string; password: string } }>("/employees", payload)).data
+    );
+  },
+  async delete(id: string): Promise<void> {
+    return mockOr(
+      () => {
+        useStore.getState().removeEmployee(id);
+      },
+      async () => {
+        await apiClient.delete(`/employees/${id}`);
+      }
+    );
   },
 };
